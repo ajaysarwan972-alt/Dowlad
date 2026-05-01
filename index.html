@@ -41,6 +41,10 @@ body{
 
 <div id="products">Loading...</div>
 
+<!-- 🔥 MOBILE CONSOLE (IMPORTANT) -->
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -54,11 +58,14 @@ load();
 
 async function load(){
 
+  console.log("🔥 LOADING START");
+
   const { data, error } = await supabase
     .from("products")
     .select("*");
 
-  console.log(data, error);
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
 
   let box = document.getElementById("products");
 
@@ -80,9 +87,9 @@ async function load(){
 
         <img src="${p.image || 'https://via.placeholder.com/300'}">
 
-        <h3>${p.name}</h3>
+        <h3>${p.name || 'No Name'}</h3>
 
-        <p>₹${p.price}</p>
+        <p>₹${p.price || 0}</p>
 
       </div>
     `;
