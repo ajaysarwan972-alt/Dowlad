@@ -41,10 +41,11 @@ body{
 
 <div id="products">Loading...</div>
 
-<!-- 🔥 MOBILE CONSOLE (IMPORTANT) -->
+<!-- 🔥 MOBILE DEBUG TOOL -->
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 
+<!-- SUPABASE LIBRARY -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -52,7 +53,8 @@ body{
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+/* 🔥 FIX: renamed instance */
+const client = supabase.createClient(supabaseUrl, supabaseKey);
 
 load();
 
@@ -60,7 +62,7 @@ async function load(){
 
   console.log("🔥 LOADING START");
 
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from("products")
     .select("*");
 
