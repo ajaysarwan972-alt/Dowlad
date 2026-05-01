@@ -48,6 +48,7 @@ body{
   border:1px solid #ddd;
 }
 
+/* 4 COLUMN GRID */
 #products{
   display:grid;
   grid-template-columns:repeat(4, 1fr);
@@ -73,6 +74,9 @@ body{
 .card h3{
   font-size:11px;
   margin:5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .card p{
@@ -118,10 +122,9 @@ body{
 
 <script>
 
-/* SUPABASE CONFIG */
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJFf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -130,10 +133,7 @@ let allProducts = [];
 load();
 
 async function load(){
-
-  const { data, error } = await client
-    .from("products")
-    .select("*");
+  const { data, error } = await client.from("products").select("*");
 
   if(error){
     document.getElementById("products").innerHTML = error.message;
@@ -141,14 +141,11 @@ async function load(){
   }
 
   allProducts = data || [];
-
   loadCategories();
   show(allProducts);
 }
 
-/* CATEGORY */
 function loadCategories(){
-
   let box = document.getElementById("category");
   box.innerHTML = `<option value="">All Categories</option>`;
 
@@ -159,9 +156,7 @@ function loadCategories(){
   });
 }
 
-/* SHOW PRODUCTS */
 function show(data){
-
   let box = document.getElementById("products");
   box.innerHTML = "";
 
@@ -181,15 +176,12 @@ function show(data){
   });
 }
 
-/* FILTER */
 function filterProducts(){
-
   let search = document.getElementById("search").value.toLowerCase();
   let category = document.getElementById("category").value;
   let priceRange = document.getElementById("priceFilter").value;
 
   let filtered = allProducts.filter(p => {
-
     let price = Number(p.price);
     let ok = true;
 
@@ -206,7 +198,6 @@ function filterProducts(){
   show(filtered);
 }
 
-/* OPEN PRODUCT */
 function openProduct(id){
   window.location.href = "view.html?id=" + id;
 }
