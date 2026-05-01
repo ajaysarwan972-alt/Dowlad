@@ -27,7 +27,6 @@ button{
   border-radius:10px;
 }
 
-/* 🖼️ IMAGE PREVIEW BOX */
 .preview-box{
   display:flex;
   flex-wrap:wrap;
@@ -47,7 +46,7 @@ button{
 
 <body>
 
-<div class="header">➕ Add Product (Multi Images)</div>
+<div class="header">➕ Add Product</div>
 
 <div class="box">
 
@@ -62,7 +61,6 @@ button{
 
 <input type="file" id="images" multiple accept="image/*" onchange="previewImages()">
 
-<!-- 🔥 PREVIEW AREA -->
 <div class="preview-box" id="preview"></div>
 
 <button onclick="add()">Save Product</button>
@@ -73,30 +71,27 @@ button{
 
 <script>
 
-const supabaseUrl="https://katbdbzoufiblnnsoxkk.supabase.co";
-const supabaseKey="YOUR_KEY";
-const client=supabase.createClient(supabaseUrl,supabaseKey);
+/* 🔥 YOUR SUPABASE CONFIG */
+const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
+const supabaseKey = "PASTE_YOUR_KEY_HERE";
 
-/* 🖼️ PREVIEW IMAGES */
+const client = supabase.createClient(supabaseUrl, supabaseKey);
+
+/* PREVIEW */
 function previewImages(){
-
-  let files=document.getElementById("images").files;
-  let box=document.getElementById("preview");
+  let files = document.getElementById("images").files;
+  let box = document.getElementById("preview");
 
   box.innerHTML="";
 
   for(let i=0;i<files.length && i<10;i++){
-
-    let img=document.createElement("img");
-    img.src=URL.createObjectURL(files[i]);
+    let img = document.createElement("img");
+    img.src = URL.createObjectURL(files[i]);
     box.appendChild(img);
   }
-
-  // show count
-  console.log("Images selected:", files.length);
 }
 
-/* UPLOAD IMAGES */
+/* UPLOAD */
 async function uploadImages(files){
 
   let urls=[];
@@ -104,16 +99,12 @@ async function uploadImages(files){
 
   for(let i=0;i<count;i++){
 
-    let file=files[i];
-    let fileName=Date.now()+"_"+file.name;
+    let file = files[i];
+    let fileName = Date.now()+"_"+file.name;
 
-    await client.storage
-      .from("products")
-      .upload(fileName,file);
+    await client.storage.from("products").upload(fileName,file);
 
-    let {data}=client.storage
-      .from("products")
-      .getPublicUrl(fileName);
+    let {data} = client.storage.from("products").getPublicUrl(fileName);
 
     urls.push(data.publicUrl);
   }
@@ -121,19 +112,22 @@ async function uploadImages(files){
   return urls;
 }
 
-/* ADD PRODUCT */
+/* SAVE PRODUCT */
 async function add(){
 
-  let files=document.getElementById("images").files;
+  let files = document.getElementById("images").files;
 
-  if(files.length===0){
+  if(files.length === 0){
     alert("Select images");
     return;
   }
 
-  let imgUrls=await uploadImages(files);
+  let imgUrls = await uploadImages(files);
 
-  let {error}=await client.from("products").insert([{
+  let mainImage = imgUrls[0];
+  let gallery = imgUrls.slice(1);
+
+  const {error} = await client.from("products").insert([{
     name:document.getElementById("name").value,
     price:document.getElementById("price").value,
     size:document.getElementById("size").value,
@@ -141,7 +135,9 @@ async function add(){
     category:document.getElementById("category").value,
     whatsapp:document.getElementById("whatsapp").value,
     description:document.getElementById("desc").value,
-    images:imgUrls
+
+    image: mainImage,
+    images: gallery
   }]);
 
   if(error){
