@@ -56,7 +56,7 @@ button.view{
 
 <script>
 
-/* 🔥 SAME KEY (FIXED) */
+/* SUPABASE CONFIG */
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
@@ -64,26 +64,38 @@ const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 window.onload = load;
 
-/* 🔥 NOW USING PRODUCTS TABLE (NOT jobs) */
+/* LOAD PRODUCTS */
 async function load(){
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("products")
     .select("*")
     .order("id",{ascending:false});
 
   let box = document.getElementById("products");
+
+  if(error){
+    box.innerHTML = "❌ " + error.message;
+    return;
+  }
+
+  if(!data || data.length === 0){
+    box.innerHTML = "❌ No Products Found";
+    return;
+  }
+
   box.innerHTML = "";
 
   data.forEach(p=>{
     box.innerHTML += `
       <div class="card">
 
-        <img src="${p.image_url}">
+        <!-- FIXED: image column = image -->
+        <img src="${p.image || 'https://via.placeholder.com/300'}">
 
-        <h3>${p.name}</h3>
+        <h3>${p.name || ''}</h3>
 
-        <p>₹${p.price}</p>
+        <p>₹${p.price || ''}</p>
 
         <button class="view" onclick="openProduct('${p.id}')">
           View Product
