@@ -48,7 +48,6 @@ body{
   border:1px solid #ddd;
 }
 
-/* 🔥 4 COLUMN GRID */
 #products{
   display:grid;
   grid-template-columns:repeat(4, 1fr);
@@ -64,7 +63,6 @@ body{
   box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
 
-/* 🔥 FULL IMAGE SHOW */
 .card img{
   width:100%;
   height:90px;
@@ -75,9 +73,6 @@ body{
 .card h3{
   font-size:11px;
   margin:5px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
 
 .card p{
@@ -123,6 +118,7 @@ body{
 
 <script>
 
+/* SUPABASE CONFIG */
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJFf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
@@ -150,6 +146,7 @@ async function load(){
   show(allProducts);
 }
 
+/* CATEGORY */
 function loadCategories(){
 
   let box = document.getElementById("category");
@@ -162,6 +159,7 @@ function loadCategories(){
   });
 }
 
+/* SHOW PRODUCTS */
 function show(data){
 
   let box = document.getElementById("products");
@@ -183,6 +181,7 @@ function show(data){
   });
 }
 
+/* FILTER */
 function filterProducts(){
 
   let search = document.getElementById("search").value.toLowerCase();
@@ -192,23 +191,22 @@ function filterProducts(){
   let filtered = allProducts.filter(p => {
 
     let price = Number(p.price);
-    let priceMatch = true;
+    let ok = true;
 
-    if(priceRange === "0-99") priceMatch = price <= 99;
-    else if(priceRange === "0-299") priceMatch = price <= 299;
-    else if(priceRange === "300-599") priceMatch = price >= 300 && price <= 599;
-    else if(priceRange === "599+") priceMatch = price >= 599;
+    if(priceRange === "0-99") ok = price <= 99;
+    else if(priceRange === "0-299") ok = price <= 299;
+    else if(priceRange === "300-599") ok = price >= 300 && price <= 599;
+    else if(priceRange === "599+") ok = price >= 599;
 
-    return (
-      (!search || (p.name && p.name.toLowerCase().includes(search))) &&
-      (!category || p.category === category) &&
-      priceMatch
-    );
+    return (!search || p.name?.toLowerCase().includes(search))
+      && (!category || p.category === category)
+      && ok;
   });
 
   show(filtered);
 }
 
+/* OPEN PRODUCT */
 function openProduct(id){
   window.location.href = "view.html?id=" + id;
 }
