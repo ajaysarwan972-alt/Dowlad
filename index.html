@@ -19,7 +19,28 @@ body{
   font-size:20px;
 }
 
-/* 🔥 3 COLUMN GRID */
+/* 🔥 FILTER BAR */
+.filters{
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.filters input, .filters select{
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+/* PRICE SLIDER */
+.price-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* GRID */
 #products{
   display:grid;
   grid-template-columns:repeat(3, 1fr);
@@ -38,7 +59,6 @@ body{
   width:100%;
   height:90px;
   object-fit:contain;
-  background:#fff;
   border-radius:10px;
 }
 
@@ -63,67 +83,116 @@ body{
 
 <div class="header">🛒 Products</div>
 
+<!-- 🔥 FILTERS -->
+<div class="filters">
+
+  <!-- SEARCH -->
+  <input type="text" id="search" placeholder="🔍 Search product..." onkeyup="filterProducts()">
+
+  <!-- CATEGORY -->
+  <select id="category" onchange="filterProducts()">
+    <option value="">All Categories</option>
+  </select>
+
+  <!-- PRICE -->
+  <div class="price-box">
+    <input type="range" id="price" min="0" max="10000" value="10000" oninput="updatePrice(); filterProducts()">
+    <span id="priceText">₹10000</span>
+  </div>
+
+</div>
+
+<!-- PRODUCTS -->
 <div id="products">Loading...</div>
 
-<!-- 🔥 MOBILE DEBUG TOOL -->
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 
-<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
+const supabaseKey = "YOUR_KEY_HERE";
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
+
+let allProducts = [];
 
 load();
 
 async function load(){
 
-  console.log("🔥 LOADING START");
-
   const { data, error } = await client
     .from("products")
     .select("*");
 
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
-
-  let box = document.getElementById("products");
+  console.log(data, error);
 
   if(error){
-    box.innerHTML = "❌ " + error.message;
+    document.getElementById("products").innerHTML = error.message;
     return;
   }
 
-  if(!data || data.length === 0){
-    box.innerHTML = "❌ No Products Found";
-    return;
-  }
+  allProducts = data || [];
 
+  loadCategories();
+  show(allProducts);
+}
+
+/* CATEGORY LOAD */
+function loadCategories(){
+
+  let box = document.getElementById("category");
+
+  let cats = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
+
+  cats.forEach(c=>{
+    box.innerHTML += `<option value="${c}">${c}</option>`;
+  });
+}
+
+/* SHOW */
+function show(data){
+
+  let box = document.getElementById("products");
   box.innerHTML = "";
 
   data.forEach(p=>{
     box.innerHTML += `
-      <div class="card" onclick="openProduct('${p.id}')">
-
+      <div class="card">
         <img src="${p.image || 'https://via.placeholder.com/300'}">
-
-        <h3>${p.name || 'No Name'}</h3>
-
-        <p>₹${p.price || 0}</p>
-
+        <h3>${p.name}</h3>
+        <p>₹${p.price}</p>
       </div>
     `;
   });
 }
 
-/* VIEW PAGE OPEN */
-function openProduct(id){
-  window.location.href = "view.html?id=" + id;
+/* FILTER SYSTEM */
+function filterProducts(){
+
+  let search = document.getElementById("search").value.toLowerCase();
+  let category = document.getElementById("category").value;
+  let price = document.getElementById("price").value;
+
+  let filtered = allProducts.filter(p=>{
+
+    return (
+      (!search || p.name.toLowerCase().includes(search)) &&
+      (!category || p.category === category) &&
+      (!price || p.price <= price)
+    );
+
+  });
+
+  show(filtered);
+}
+
+/* PRICE TEXT */
+function updatePrice(){
+  document.getElementById("priceText").innerText =
+    "₹" + document.getElementById("price").value;
 }
 
 </script>
