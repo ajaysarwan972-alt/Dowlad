@@ -5,38 +5,15 @@
 <title>Add Product</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#eef2f7;
-}
-
-.header{
-  background:#1e88e5;
-  color:white;
-  padding:15px;
-  text-align:center;
-}
-
-/* 🔥 1 ROW - 2 COLUMNS */
-.row{
-  display:flex;
-  gap:10px;
-  padding:10px;
-}
-
-.box{
-  flex:1;
-  background:#fff;
-  padding:10px;
-  border-radius:10px;
-}
+body{margin:0;font-family:Arial;background:#eef2f7;}
+.header{background:#1e88e5;color:white;padding:15px;text-align:center;}
+.box{padding:15px;}
 
 input,textarea{
   width:100%;
   padding:10px;
-  margin-top:8px;
-  border-radius:8px;
+  margin-top:10px;
+  border-radius:10px;
   border:1px solid #ccc;
 }
 
@@ -50,19 +27,33 @@ button{
   border-radius:10px;
 }
 
-/* PREVIEW */
-.preview{
+.preview-box{
   display:flex;
   flex-wrap:wrap;
   gap:5px;
   margin-top:10px;
 }
 
-.preview img{
+.preview-box img{
   width:60px;
   height:60px;
   object-fit:cover;
-  border-radius:6px;
+  border-radius:8px;
+}
+
+/* 🔥 SAVED IMAGES SECTION */
+.saved-box{
+  margin-top:20px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+
+.saved-box img{
+  width:70px;
+  height:70px;
+  border-radius:8px;
+  object-fit:cover;
 }
 </style>
 </head>
@@ -71,32 +62,26 @@ button{
 
 <div class="header">➕ Add Product</div>
 
-<!-- 🔥 ROW -->
-<div class="row">
+<div class="box">
 
-  <!-- SINGLE IMAGE -->
-  <div class="box">
-    <h4>Main Image</h4>
-    <input type="file" id="mainImg" accept="image/*" onchange="previewMain()">
-    <div class="preview" id="mainPreview"></div>
-  </div>
+<input id="name" placeholder="Product Name">
+<input id="price" type="number" placeholder="Price">
+<input id="size" placeholder="Size">
+<input id="brand" placeholder="Brand">
+<input id="category" placeholder="Category">
+<input id="whatsapp" placeholder="WhatsApp">
 
-  <!-- MULTI IMAGE -->
-  <div class="box">
-    <h4>Gallery Images</h4>
-    <input type="file" id="multiImg" multiple accept="image/*" onchange="previewMulti()">
-    <div class="preview" id="multiPreview"></div>
-  </div>
+<textarea id="desc" placeholder="Description"></textarea>
 
-</div>
+<input type="file" id="images" multiple accept="image/*" onchange="previewImages()">
 
-<!-- DETAILS -->
-<div style="padding:10px;">
-  <input id="name" placeholder="Product Name">
-  <input id="price" placeholder="Price">
-  <textarea id="desc" placeholder="Description"></textarea>
+<div class="preview-box" id="preview"></div>
 
-  <button onclick="save()">Save Product</button>
+<button onclick="add()">Save Product</button>
+
+<!-- 🔥 NICHÉ SAVED IMAGES SHOW -->
+<div class="saved-box" id="savedBox"></div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -108,21 +93,10 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-let mainImageUrl = "";
-let galleryUrls = [];
-
-/* MAIN PREVIEW */
-function previewMain(){
-  let file = document.getElementById("mainImg").files[0];
-  let box = document.getElementById("mainPreview");
-
-  box.innerHTML = `<img src="${URL.createObjectURL(file)}">`;
-}
-
-/* MULTI PREVIEW */
-function previewMulti(){
-  let files = document.getElementById("multiImg").files;
-  let box = document.getElementById("multiPreview");
+/* PREVIEW */
+function previewImages(){
+  let files = document.getElementById("images").files;
+  let box = document.getElementById("preview");
 
   box.innerHTML = "";
 
@@ -134,46 +108,61 @@ function previewMulti(){
 }
 
 /* UPLOAD */
-async function upload(file){
-  let name = Date.now()+"_"+file.name;
+async function uploadImages(files){
 
-  await client.storage.from("products").upload(name,file);
+  let urls = [];
+  let limit = Math.min(files.length,10);
 
-  let {data} = client.storage.from("products").getPublicUrl(name);
+  for(let i=0;i<limit;i++){
 
-  return data.publicUrl;
+    let file = files[i];
+    let fileName = Date.now()+"_"+file.name;
+
+    await client.storage.from("products").upload(fileName,file);
+
+    let {data} = client.storage.from("products").getPublicUrl(fileName);
+
+    urls.push(data.publicUrl);
+  }
+
+  return urls;
 }
 
 /* SAVE */
-async function save(){
+async function add(){
 
-  let mainFile = document.getElementById("mainImg").files[0];
-  let multiFiles = document.getElementById("multiImg").files;
+  let files = document.getElementById("images").files;
 
-  if(!mainFile){
-    alert("Main image select karo");
-    return;
-  }
-
-  mainImageUrl = await upload(mainFile);
-
-  galleryUrls = [];
-
-  for(let i=0;i<multiFiles.length;i++){
-    let url = await upload(multiFiles[i]);
-    galleryUrls.push(url);
-  }
+  let urls = await uploadImages(files);
 
   await client.from("products").insert([{
     name:document.getElementById("name").value,
     price:document.getElementById("price").value,
+    size:document.getElementById("size").value,
+    brand:document.getElementById("brand").value,
+    category:document.getElementById("category").value,
+    whatsapp:document.getElementById("whatsapp").value,
     description:document.getElementById("desc").value,
-
-    image: mainImageUrl,
-    images: galleryUrls
+    image:urls[0],
+    images:urls
   }]);
 
-  alert("Product Saved 🚀");
+  alert("Saved 🚀");
+
+  showSaved(urls); // 🔥 ab niche images show hongi
+}
+
+/* 🔥 SHOW SAVED IMAGES */
+function showSaved(urls){
+
+  let box = document.getElementById("savedBox");
+  box.innerHTML = "";
+
+  urls.forEach(url=>{
+    let img = document.createElement("img");
+    img.src = url;
+    box.appendChild(img);
+  });
 }
 
 </script>
