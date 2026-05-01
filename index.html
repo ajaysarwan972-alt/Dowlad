@@ -2,13 +2,17 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shoping App</title>
+<title>Shoping Portal</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#eef2f7}
+body{
+  margin:0;
+  font-family:Arial;
+  background:#eef2f7;
+}
 
 .header{
-  background:linear-gradient(135deg,#43a047,#2e7d32);
+  background:linear-gradient(135deg,#1e88e5,#1565c0);
   color:white;
   padding:18px;
   text-align:center;
@@ -30,11 +34,11 @@ body{margin:0;font-family:Arial;background:#eef2f7}
   border-radius:12px;
 }
 
-button{
+button.view{
   width:100%;
   padding:10px;
   margin-top:10px;
-  background:#43a047;
+  background:#1e88e5;
   color:white;
   border:none;
   border-radius:10px;
@@ -44,7 +48,7 @@ button{
 
 <body>
 
-<div class="header">🛒 Shoping App</div>
+<div class="header">🛒 Shoping Finder</div>
 
 <div id="products"></div>
 
@@ -52,6 +56,7 @@ button{
 
 <script>
 
+/* 🔥 SAME KEY (FIXED) */
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
@@ -59,6 +64,7 @@ const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 window.onload = load;
 
+/* 🔥 NOW USING PRODUCTS TABLE (NOT jobs) */
 async function load(){
 
   const { data } = await supabase
@@ -79,7 +85,7 @@ async function load(){
 
         <p>₹${p.price}</p>
 
-        <button onclick="openProduct('${p.id}')">
+        <button class="view" onclick="openProduct('${p.id}')">
           View Product
         </button>
 
