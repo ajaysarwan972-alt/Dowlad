@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shoping Portal</title>
+<title>Shoping App</title>
 
 <style>
 body{
@@ -48,7 +48,7 @@ button.view{
 
 <body>
 
-<div class="header">🛒 Shoping Finder</div>
+<div class="header">🛒 Shoping App</div>
 
 <div id="products"></div>
 
@@ -56,7 +56,7 @@ button.view{
 
 <script>
 
-/* SUPABASE CONFIG */
+/* 🔥 SUPABASE CONFIG (KEY ADDED) */
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
@@ -64,13 +64,17 @@ const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 window.onload = load;
 
-/* LOAD PRODUCTS */
+/* 🔥 LOAD PRODUCTS */
 async function load(){
+
+  console.log("TEST START");
 
   const { data, error } = await supabase
     .from("products")
-    .select("*")
-    .order("id",{ascending:false});
+    .select("*");
+
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
 
   let box = document.getElementById("products");
 
@@ -90,7 +94,7 @@ async function load(){
     box.innerHTML += `
       <div class="card">
 
-        <!-- FIXED: image column = image -->
+        <!-- IMPORTANT: column = image -->
         <img src="${p.image || 'https://via.placeholder.com/300'}">
 
         <h3>${p.name || ''}</h3>
@@ -106,6 +110,7 @@ async function load(){
   });
 }
 
+/* OPEN DETAIL PAGE */
 function openProduct(id){
   window.location.href = "product.html?id=" + id;
 }
