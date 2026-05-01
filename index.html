@@ -49,6 +49,7 @@ body{
   background:white;
   padding:8px;
   border-radius:12px;
+  cursor:pointer;
 }
 
 .card img{
@@ -151,7 +152,7 @@ function show(data){
 
   data.forEach(p=>{
     box.innerHTML += `
-      <div class="card">
+      <div class="card" onclick="openProduct('${p.id}')">
         <img src="${p.image || 'https://via.placeholder.com/300'}">
         <h3>${p.name || ''}</h3>
         <p>₹${p.price || 0}</p>
@@ -180,6 +181,11 @@ function filterProducts(){
 function updatePrice(){
   document.getElementById("priceText").innerText =
     "₹" + document.getElementById("price").value;
+}
+
+/* VIEW PAGE */
+function openProduct(id){
+  window.location.href = "view.html?id=" + id;
 }
 
 </script>
