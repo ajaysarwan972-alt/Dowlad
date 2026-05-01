@@ -11,48 +11,83 @@ body{
   background:#f5f6fa;
 }
 
+/* HEADER */
 .header{
-  background:linear-gradient(135deg,#ff3c7e,#ff6b3d);
-  color:white;
-  padding:16px;
-  text-align:center;
-  font-size:22px;
-  font-weight:bold;
-}
-
-.top-btn{
-  padding:10px;
-  text-align:center;
-}
-
-.top-btn button{
-  padding:10px 18px;
-  border:none;
-  background:linear-gradient(135deg,#25D366,#1ebe57);
-  color:white;
-  border-radius:25px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.filters{
+  background:white;
   padding:10px;
   display:flex;
-  flex-direction:column;
-  gap:8px;
+  align-items:center;
+  gap:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
 }
 
-.filters input, .filters select{
+.logo{
+  font-weight:bold;
+  color:#ff3c7e;
+  font-size:18px;
+}
+
+.search{
+  flex:1;
+}
+
+.search input{
+  width:100%;
   padding:10px;
-  border-radius:10px;
+  border-radius:20px;
   border:1px solid #ddd;
 }
 
-/* 4 COLUMN GRID */
+/* CATEGORY SCROLL */
+.categories{
+  display:flex;
+  overflow-x:auto;
+  gap:10px;
+  padding:10px;
+  background:white;
+}
+
+.cat{
+  min-width:70px;
+  text-align:center;
+  font-size:12px;
+}
+
+.cat img{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+}
+
+/* BANNER */
+.banner{
+  background:#ff3c7e;
+  color:white;
+  text-align:center;
+  padding:10px;
+  font-weight:bold;
+}
+
+/* FILTER BAR */
+.filters{
+  display:flex;
+  justify-content:space-around;
+  background:white;
+  padding:10px;
+  border-top:1px solid #eee;
+  border-bottom:1px solid #eee;
+}
+
+.filters select{
+  padding:6px;
+  border-radius:8px;
+}
+
+/* PRODUCTS GRID */
 #products{
   display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  gap:8px;
+  grid-template-columns:repeat(2, 1fr);
+  gap:10px;
   padding:10px;
 }
 
@@ -60,70 +95,99 @@ body{
   background:white;
   border-radius:12px;
   overflow:hidden;
-  cursor:pointer;
-  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  box-shadow:0 3px 8px rgba(0,0,0,0.08);
 }
 
 .card img{
   width:100%;
-  height:90px;
-  object-fit:contain;
-  background:#fff;
+  height:140px;
+  object-fit:cover;
 }
 
 .card h3{
-  font-size:11px;
-  margin:5px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  font-size:13px;
+  margin:6px;
 }
 
 .card p{
-  margin:5px;
-  font-size:12px;
+  margin:6px;
   font-weight:bold;
   color:#ff3c7e;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:white;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+  box-shadow:0 -2px 6px rgba(0,0,0,0.1);
+}
+
+.bottom-nav div{
+  text-align:center;
+  font-size:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">🛍️ APNA BAZAR</div>
-
-<div class="top-btn">
-  <button onclick="window.location.href='login.html'">
-    ➕ Add Product
-  </button>
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">APNA BAZAR</div>
+  <div class="search">
+    <input type="text" id="search" placeholder="Search products..." onkeyup="filterProducts()">
+  </div>
 </div>
 
+<!-- CATEGORY -->
+<div class="categories">
+  <div class="cat">All</div>
+  <div class="cat">Men</div>
+  <div class="cat">Women</div>
+  <div class="cat">Kids</div>
+  <div class="cat">Electronics</div>
+</div>
+
+<!-- BANNER -->
+<div class="banner">
+  🔥 Sunday Sale - Upto 70% OFF
+</div>
+
+<!-- FILTER -->
 <div class="filters">
-
-  <input type="text" id="search" placeholder="🔍 Search product..." onkeyup="filterProducts()">
-
   <select id="category" onchange="filterProducts()">
-    <option value="">All Categories</option>
+    <option value="">Category</option>
   </select>
 
   <select id="priceFilter" onchange="filterProducts()">
-    <option value="">All Prices</option>
-    <option value="0-99">0 - 99</option>
-    <option value="0-299">0 - 299</option>
-    <option value="300-599">300 - 599</option>
+    <option value="">Price</option>
+    <option value="0-99">0-99</option>
+    <option value="0-299">0-299</option>
+    <option value="300-599">300-599</option>
     <option value="599+">599+</option>
   </select>
-
 </div>
 
+<!-- PRODUCTS -->
 <div id="products">Loading...</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div>🏠 Home</div>
+  <div>📦 Orders</div>
+  <div>➕ Sell</div>
+  <div>👤 Account</div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
-
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
@@ -147,8 +211,6 @@ async function load(){
 
 function loadCategories(){
   let box = document.getElementById("category");
-  box.innerHTML = `<option value="">All Categories</option>`;
-
   let cats = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
 
   cats.forEach(c=>{
@@ -160,17 +222,12 @@ function show(data){
   let box = document.getElementById("products");
   box.innerHTML = "";
 
-  if(!data.length){
-    box.innerHTML = "❌ No Products Found";
-    return;
-  }
-
   data.forEach(p=>{
     box.innerHTML += `
       <div class="card" onclick="openProduct('${p.id}')">
-        <img src="${p.image || 'https://via.placeholder.com/300'}">
-        <h3>${p.name || ''}</h3>
-        <p>₹${p.price || 0}</p>
+        <img src="${p.image}">
+        <h3>${p.name}</h3>
+        <p>₹${p.price}</p>
       </div>
     `;
   });
@@ -201,7 +258,6 @@ function filterProducts(){
 function openProduct(id){
   window.location.href = "view.html?id=" + id;
 }
-
 </script>
 
 </body>
