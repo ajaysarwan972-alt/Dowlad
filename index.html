@@ -72,7 +72,7 @@ body{
   border-radius:8px;
 }
 
-/* 🔥 PRODUCTS (3 COLUMN) */
+/* PRODUCTS */
 #products{
   display:grid;
   grid-template-columns:repeat(3, 1fr);
@@ -86,7 +86,6 @@ body{
   overflow:hidden;
 }
 
-/* 🔥 IMAGE FULL SHOW */
 .card img{
   width:100%;
   height:100px;
@@ -116,7 +115,7 @@ body{
 <div class="header">
   <div class="logo">APNA BAZAR</div>
   <div class="search">
-    <input type="text" id="search" placeholder="Search..." onkeyup="filterProducts()">
+    <input type="text" id="search" placeholder="Search category..." onkeyup="filterProducts()">
   </div>
 </div>
 
@@ -164,7 +163,7 @@ async function load(){
   show(allProducts);
 }
 
-/* REAL CATEGORY BUILD */
+/* CATEGORY BUILD */
 function buildCategories(){
 
   let dropdown = document.getElementById("category");
@@ -231,16 +230,21 @@ function show(data){
   });
 }
 
-/* FILTER */
+/* 🔥 FILTER (SEARCH ONLY CATEGORY) */
 function filterProducts(){
 
-  let search = document.getElementById("search").value.toLowerCase();
+  let search = document.getElementById("search").value.toLowerCase().trim();
   let category = selectedCategory || document.getElementById("category").value;
   let priceRange = document.getElementById("priceFilter").value;
 
   let filtered = allProducts.filter(p=>{
 
-    let price = Number(p.price);
+    let cat = (p.category || "").toLowerCase();
+
+    // 🔥 ONLY CATEGORY SEARCH
+    let searchMatch = !search || cat.includes(search);
+
+    let price = Number(p.price) || 0;
     let ok = true;
 
     if(priceRange==="0-99") ok = price<=99;
@@ -248,7 +252,7 @@ function filterProducts(){
     else if(priceRange==="300-599") ok = price>=300 && price<=599;
     else if(priceRange==="599+") ok = price>=599;
 
-    return (!search || p.name?.toLowerCase().includes(search))
+    return searchMatch
       && (!category || p.category===category)
       && ok;
   });
