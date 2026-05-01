@@ -71,9 +71,9 @@ button{
 
 <script>
 
-/* 🔥 YOUR SUPABASE CONFIG */
+/* ✅ SUPABASE CONFIG (KEY ADDED) */
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
-const supabaseKey = "PASTE_YOUR_KEY_HERE";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -85,8 +85,8 @@ function previewImages(){
   box.innerHTML="";
 
   for(let i=0;i<files.length && i<10;i++){
-    let img = document.createElement("img");
-    img.src = URL.createObjectURL(files[i]);
+    let img=document.createElement("img");
+    img.src=URL.createObjectURL(files[i]);
     box.appendChild(img);
   }
 }
@@ -99,12 +99,12 @@ async function uploadImages(files){
 
   for(let i=0;i<count;i++){
 
-    let file = files[i];
-    let fileName = Date.now()+"_"+file.name;
+    let file=files[i];
+    let fileName=Date.now()+"_"+file.name;
 
     await client.storage.from("products").upload(fileName,file);
 
-    let {data} = client.storage.from("products").getPublicUrl(fileName);
+    let {data}=client.storage.from("products").getPublicUrl(fileName);
 
     urls.push(data.publicUrl);
   }
@@ -112,12 +112,12 @@ async function uploadImages(files){
   return urls;
 }
 
-/* SAVE PRODUCT */
+/* SAVE */
 async function add(){
 
-  let files = document.getElementById("images").files;
+  let files=document.getElementById("images").files;
 
-  if(files.length === 0){
+  if(files.length===0){
     alert("Select images");
     return;
   }
