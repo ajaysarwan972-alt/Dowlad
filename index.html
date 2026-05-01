@@ -48,7 +48,6 @@ body{
   border:1px solid #ddd;
 }
 
-/* PRODUCTS */
 #products{
   display:grid;
   grid-template-columns:repeat(2, 1fr);
@@ -102,7 +101,6 @@ body{
     <option value="">All Categories</option>
   </select>
 
-  <!-- PRICE FILTER -->
   <select id="priceFilter" onchange="filterProducts()">
     <option value="">All Prices</option>
     <option value="0-99">0 - 99</option>
@@ -119,10 +117,11 @@ body{
 
 <script>
 
-/* ✅ SUPABASE CONFIG (KEY INCLUDED - DO NOT REMOVE) */
+/* ✅ SUPABASE CONFIG */
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJFf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
+/* 🔥 YOUR KEY (AS PROVIDED) */
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -130,7 +129,6 @@ let allProducts = [];
 
 load();
 
-/* LOAD PRODUCTS */
 async function load(){
 
   const { data, error } = await client
@@ -161,7 +159,7 @@ function loadCategories(){
   });
 }
 
-/* SHOW PRODUCTS */
+/* SHOW */
 function show(data){
 
   let box = document.getElementById("products");
@@ -193,21 +191,12 @@ function filterProducts(){
   let filtered = allProducts.filter(p => {
 
     let price = Number(p.price);
-
     let priceMatch = true;
 
-    if(priceRange === "0-99"){
-      priceMatch = price <= 99;
-    }
-    else if(priceRange === "0-299"){
-      priceMatch = price <= 299;
-    }
-    else if(priceRange === "300-599"){
-      priceMatch = price >= 300 && price <= 599;
-    }
-    else if(priceRange === "599+"){
-      priceMatch = price >= 599;
-    }
+    if(priceRange === "0-99") priceMatch = price <= 99;
+    else if(priceRange === "0-299") priceMatch = price <= 299;
+    else if(priceRange === "300-599") priceMatch = price >= 300 && price <= 599;
+    else if(priceRange === "599+") priceMatch = price >= 599;
 
     return (
       (!search || (p.name && p.name.toLowerCase().includes(search))) &&
@@ -219,7 +208,6 @@ function filterProducts(){
   show(filtered);
 }
 
-/* OPEN PRODUCT */
 function openProduct(id){
   window.location.href = "view.html?id=" + id;
 }
