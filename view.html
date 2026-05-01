@@ -19,6 +19,24 @@ body{
   font-size:20px;
 }
 
+/* SLIDER */
+.slider{
+  display:flex;
+  overflow-x:auto;
+  gap:10px;
+  padding:10px;
+}
+
+.slider img{
+  width:120px;
+  height:120px;
+  object-fit:cover;
+  border-radius:10px;
+  flex-shrink:0;
+  cursor:pointer;
+}
+
+/* CARD */
 .card{
   background:white;
   margin:12px;
@@ -26,13 +44,11 @@ body{
   border-radius:12px;
 }
 
-.card img{
-  width:100%;
-  height:250px;
-  object-fit:cover;
-  border-radius:10px;
+.card h3{
+  color:#1e88e5;
 }
 
+/* BUTTON */
 .btn{
   width:100%;
   padding:12px;
@@ -43,12 +59,28 @@ body{
   color:white;
 }
 
-.whatsapp{
-  background:#25D366;
+.whatsapp{background:#25D366;}
+.back{background:#1e88e5;}
+
+/* 🔥 FULL IMAGE POPUP */
+#popup{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.9);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
 }
 
-.back{
-  background:#1e88e5;
+#popup img{
+  width:90%;
+  max-height:80%;
+  object-fit:contain;
+  border-radius:10px;
 }
 </style>
 </head>
@@ -59,6 +91,11 @@ body{
 
 <div id="product">Loading...</div>
 
+<!-- 🔥 IMAGE POPUP -->
+<div id="popup" onclick="closePopup()">
+  <img id="popupImg">
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -68,41 +105,39 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+const id = new URLSearchParams(window.location.search).get("id");
 
 load();
 
 async function load(){
 
-  if(!id){
-    document.getElementById("product").innerHTML = "❌ No ID Found";
-    return;
-  }
-
-  const { data, error } = await client
+  const { data } = await client
     .from("products")
     .select("*")
     .eq("id", id)
     .single();
 
-  console.log(data, error);
-
-  if(error || !data){
-    document.getElementById("product").innerHTML = "❌ Product Not Found";
+  if(!data){
+    document.getElementById("product").innerHTML = "❌ Not Found";
     return;
   }
 
+  let images = data.images || [data.image];
+
+  let imgHtml = images.map(img =>
+    `<img src="${img}" onclick="openPopup('${img}')">`
+  ).join("");
+
   document.getElementById("product").innerHTML = `
+    <div class="slider">
+      ${imgHtml}
+    </div>
+
     <div class="card">
 
-      <img src="${data.image || 'https://via.placeholder.com/300'}">
-
-      <h2>${data.name || 'No Name'}</h2>
-
-      <h3>₹${data.price || 0}</h3>
-
-      <p>${data.description || 'No description available'}</p>
+      <h2>${data.name}</h2>
+      <h3>₹${data.price}</h3>
+      <p>${data.description || ''}</p>
 
       <button class="btn whatsapp" onclick="orderNow('${data.name}','${data.price}')">
         📲 Order on WhatsApp
@@ -116,10 +151,21 @@ async function load(){
   `;
 }
 
-/* WHATSAPP ORDER */
+/* 🔥 OPEN IMAGE FULL */
+function openPopup(img){
+  document.getElementById("popup").style.display = "flex";
+  document.getElementById("popupImg").src = img;
+}
+
+/* CLOSE POPUP */
+function closePopup(){
+  document.getElementById("popup").style.display = "none";
+}
+
+/* WHATSAPP */
 function orderNow(name, price){
 
-  let phone = "91XXXXXXXXXX"; // 👉 अपना WhatsApp number डाल
+  let phone = "91XXXXXXXXXX";
 
   let msg = `Hello, I want to order:\n\nProduct: ${name}\nPrice: ₹${price}`;
 
