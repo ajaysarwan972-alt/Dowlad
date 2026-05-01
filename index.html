@@ -19,7 +19,6 @@ body{
   font-size:20px;
 }
 
-/* 🔥 ADD BUTTON STYLE AREA */
 .top-btn{
   padding:10px;
   text-align:center;
@@ -46,12 +45,6 @@ body{
   padding:10px;
   border-radius:10px;
   border:1px solid #ccc;
-}
-
-.price-box{
-  display:flex;
-  align-items:center;
-  gap:10px;
 }
 
 #products{
@@ -93,7 +86,6 @@ body{
 
 <div class="header">🛒 Products</div>
 
-<!-- 🔥 ADD PRODUCT BUTTON -->
 <div class="top-btn">
   <button onclick="window.location.href='login.html'">
     ➕ Add Product
@@ -108,11 +100,14 @@ body{
     <option value="">All Categories</option>
   </select>
 
-  <div class="price-box">
-    <input type="range" id="price" min="0" max="10000" value="10000"
-    oninput="updatePrice(); filterProducts()">
-    <span id="priceText">₹10000</span>
-  </div>
+  <!-- 🔥 PRICE DROPDOWN FILTER -->
+  <select id="priceFilter" onchange="filterProducts()">
+    <option value="">All Prices</option>
+    <option value="0-99">0 - 99</option>
+    <option value="0-299">0 - 299</option>
+    <option value="300-599">300 - 599</option>
+    <option value="599+">599+</option>
+  </select>
 
 </div>
 
@@ -124,7 +119,7 @@ body{
 
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJFf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -189,23 +184,35 @@ function filterProducts(){
 
   let search = document.getElementById("search").value.toLowerCase();
   let category = document.getElementById("category").value;
-  let price = Number(document.getElementById("price").value);
+  let priceRange = document.getElementById("priceFilter").value;
 
-  let filtered = allProducts.filter(p =>
-    (!search || (p.name && p.name.toLowerCase().includes(search))) &&
-    (!category || p.category === category) &&
-    (!price || Number(p.price) <= price)
-  );
+  let filtered = allProducts.filter(p => {
+
+    let price = Number(p.price);
+
+    let priceMatch = true;
+
+    if(priceRange === "0-99"){
+      priceMatch = price <= 99;
+    }
+    else if(priceRange === "0-299"){
+      priceMatch = price <= 299;
+    }
+    else if(priceRange === "300-599"){
+      priceMatch = price >= 300 && price <= 599;
+    }
+    else if(priceRange === "599+"){
+      priceMatch = price >= 599;
+    }
+
+    return (
+      (!search || (p.name && p.name.toLowerCase().includes(search))) &&
+      (!category || p.category === category) &&
+      priceMatch
+    );
+  });
 
   show(filtered);
-}
-
-/* PRICE */
-function updatePrice(){
-  document.getElementById("priceText").innerText =
-    "₹" + document.getElementById("price").value;
-
-  filterProducts();
 }
 
 /* VIEW PAGE */
