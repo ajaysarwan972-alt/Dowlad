@@ -59,18 +59,26 @@ body{
   object-fit:cover;
 }
 
-/* FILTER */
-.filters{
+/* 🔥 BUTTON BAR */
+.actions{
   display:flex;
   justify-content:space-around;
-  background:white;
   padding:10px;
+  background:white;
 }
 
-.filters select{
-  padding:6px;
-  border-radius:8px;
+.actions button{
+  padding:8px 12px;
+  border:none;
+  border-radius:20px;
+  font-size:12px;
+  color:white;
+  cursor:pointer;
 }
+
+.add{ background:#25D366; }
+.job{ background:#3498db; }
+.game{ background:#ff3c7e; }
 
 /* PRODUCTS */
 #products{
@@ -121,16 +129,11 @@ body{
 
 <div class="categories" id="catScroll"></div>
 
-<div class="filters">
-  <select id="category" onchange="filterProducts()"></select>
-
-  <select id="priceFilter" onchange="filterProducts()">
-    <option value="">Price</option>
-    <option value="0-99">0-99</option>
-    <option value="0-299">0-299</option>
-    <option value="300-599">300-599</option>
-    <option value="599+">599+</option>
-  </select>
+<!-- 🔥 NEW BUTTONS -->
+<div class="actions">
+  <button class="add" onclick="location.href='login.html'">➕ Add Product</button>
+  <button class="job">💼 Job</button>
+  <button class="game" onclick="location.href='game.html'">🎮 Game</button>
 </div>
 
 <div id="products">Loading...</div>
@@ -149,7 +152,7 @@ let selectedCategory = "";
 
 load();
 
-/* LOAD DATA */
+/* LOAD */
 async function load(){
   const { data, error } = await client.from("products").select("*");
 
@@ -163,26 +166,19 @@ async function load(){
   show(allProducts);
 }
 
-/* CATEGORY BUILD */
+/* CATEGORY */
 function buildCategories(){
-
-  let dropdown = document.getElementById("category");
   let scroll = document.getElementById("catScroll");
-
-  dropdown.innerHTML = `<option value="">All</option>`;
   scroll.innerHTML = "";
 
   let map = {};
 
   allProducts.forEach(p=>{
-    if(p.category){
-      if(!map[p.category]){
-        map[p.category] = p.category_image || p.image;
-      }
+    if(p.category && !map[p.category]){
+      map[p.category] = p.category_image || p.image;
     }
   });
 
-  // ALL
   scroll.innerHTML += `
     <div class="cat" onclick="selectCategory('')">
       <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png">
@@ -191,8 +187,6 @@ function buildCategories(){
   `;
 
   Object.keys(map).forEach(c=>{
-    dropdown.innerHTML += `<option value="${c}">${c}</option>`;
-
     scroll.innerHTML += `
       <div class="cat" onclick="selectCategory('${c}')">
         <img src="${map[c]}">
@@ -202,14 +196,12 @@ function buildCategories(){
   });
 }
 
-/* SELECT CATEGORY */
 function selectCategory(cat){
   selectedCategory = cat;
-  document.getElementById("category").value = cat;
   filterProducts();
 }
 
-/* SHOW PRODUCTS */
+/* SHOW */
 function show(data){
   let box = document.getElementById("products");
   box.innerHTML = "";
@@ -230,31 +222,14 @@ function show(data){
   });
 }
 
-/* 🔥 FILTER (SEARCH ONLY CATEGORY) */
+/* FILTER (CATEGORY SEARCH) */
 function filterProducts(){
-
   let search = document.getElementById("search").value.toLowerCase().trim();
-  let category = selectedCategory || document.getElementById("category").value;
-  let priceRange = document.getElementById("priceFilter").value;
 
   let filtered = allProducts.filter(p=>{
-
     let cat = (p.category || "").toLowerCase();
-
-    // 🔥 ONLY CATEGORY SEARCH
-    let searchMatch = !search || cat.includes(search);
-
-    let price = Number(p.price) || 0;
-    let ok = true;
-
-    if(priceRange==="0-99") ok = price<=99;
-    else if(priceRange==="0-299") ok = price<=299;
-    else if(priceRange==="300-599") ok = price>=300 && price<=599;
-    else if(priceRange==="599+") ok = price>=599;
-
-    return searchMatch
-      && (!category || p.category===category)
-      && ok;
+    return (!search || cat.includes(search))
+      && (!selectedCategory || p.category===selectedCategory);
   });
 
   show(filtered);
