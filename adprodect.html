@@ -46,7 +46,7 @@ button{
 
 <body>
 
-<div class="header">➕ Add Product</div>
+<div class="header">➕ Add Product (Multi Image System)</div>
 
 <div class="box">
 
@@ -71,40 +71,44 @@ button{
 
 <script>
 
-/* ✅ SUPABASE CONFIG (KEY ADDED) */
+/* ✅ SUPABASE CONFIG */
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-/* PREVIEW */
+/* 🖼 PREVIEW */
 function previewImages(){
   let files = document.getElementById("images").files;
   let box = document.getElementById("preview");
 
-  box.innerHTML="";
+  box.innerHTML = "";
 
   for(let i=0;i<files.length && i<10;i++){
-    let img=document.createElement("img");
-    img.src=URL.createObjectURL(files[i]);
+    let img = document.createElement("img");
+    img.src = URL.createObjectURL(files[i]);
     box.appendChild(img);
   }
 }
 
-/* UPLOAD */
+/* 📤 UPLOAD MULTI IMAGES */
 async function uploadImages(files){
 
-  let urls=[];
-  let count=Math.min(files.length,10);
+  let urls = [];
+  let count = Math.min(files.length, 10);
 
   for(let i=0;i<count;i++){
 
-    let file=files[i];
-    let fileName=Date.now()+"_"+file.name;
+    let file = files[i];
+    let fileName = Date.now() + "_" + file.name;
 
-    await client.storage.from("products").upload(fileName,file);
+    await client.storage
+      .from("products")
+      .upload(fileName, file);
 
-    let {data}=client.storage.from("products").getPublicUrl(fileName);
+    let {data} = client.storage
+      .from("products")
+      .getPublicUrl(fileName);
 
     urls.push(data.publicUrl);
   }
@@ -112,12 +116,12 @@ async function uploadImages(files){
   return urls;
 }
 
-/* SAVE */
+/* 💾 SAVE PRODUCT */
 async function add(){
 
-  let files=document.getElementById("images").files;
+  let files = document.getElementById("images").files;
 
-  if(files.length===0){
+  if(files.length === 0){
     alert("Select images");
     return;
   }
@@ -128,13 +132,13 @@ async function add(){
   let gallery = imgUrls.slice(1);
 
   const {error} = await client.from("products").insert([{
-    name:document.getElementById("name").value,
-    price:document.getElementById("price").value,
-    size:document.getElementById("size").value,
-    brand:document.getElementById("brand").value,
-    category:document.getElementById("category").value,
-    whatsapp:document.getElementById("whatsapp").value,
-    description:document.getElementById("desc").value,
+    name: document.getElementById("name").value,
+    price: document.getElementById("price").value,
+    size: document.getElementById("size").value,
+    brand: document.getElementById("brand").value,
+    category: document.getElementById("category").value,
+    whatsapp: document.getElementById("whatsapp").value,
+    description: document.getElementById("desc").value,
 
     image: mainImage,
     images: gallery
@@ -142,8 +146,8 @@ async function add(){
 
   if(error){
     alert(error.message);
-  }else{
-    alert("Product Added 🚀");
+  } else {
+    alert("Product Added Successfully 🚀");
     location.reload();
   }
 }
