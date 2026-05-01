@@ -24,6 +24,7 @@ body{
   margin:12px;
   padding:12px;
   border-radius:12px;
+  cursor:pointer;
 }
 
 .card img{
@@ -45,7 +46,7 @@ body{
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 
-<!-- SUPABASE LIBRARY -->
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -53,7 +54,6 @@ body{
 const supabaseUrl = "https://katbdbzoufiblnnsoxkk.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthdGJkYnpvdWZpYmxubnNveGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDY1NDQsImV4cCI6MjA4OTY4MjU0NH0.9_4KaSEJf4TOVD67ocNBI5UypgkfpZvdB-sKqEtVBdM";
 
-/* 🔥 FIX: renamed instance */
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
 load();
@@ -85,7 +85,7 @@ async function load(){
 
   data.forEach(p=>{
     box.innerHTML += `
-      <div class="card">
+      <div class="card" onclick="openProduct('${p.id}')">
 
         <img src="${p.image || 'https://via.placeholder.com/300'}">
 
@@ -96,6 +96,11 @@ async function load(){
       </div>
     `;
   });
+}
+
+/* 🔥 VIEW PAGE OPEN */
+function openProduct(id){
+  window.location.href = "view.html?id=" + id;
 }
 
 </script>
