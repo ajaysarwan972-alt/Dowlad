@@ -37,11 +37,18 @@ body{
   width:100%;
   padding:12px;
   margin-top:10px;
-  background:#1e88e5;
-  color:white;
   border:none;
   border-radius:10px;
   font-size:16px;
+  color:white;
+}
+
+.whatsapp{
+  background:#25D366;
+}
+
+.back{
+  background:#1e88e5;
 }
 </style>
 </head>
@@ -61,7 +68,6 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-/* GET ID FROM URL */
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
@@ -70,7 +76,7 @@ load();
 async function load(){
 
   if(!id){
-    document.getElementById("product").innerHTML = "❌ No Product ID";
+    document.getElementById("product").innerHTML = "❌ No ID Found";
     return;
   }
 
@@ -80,30 +86,29 @@ async function load(){
     .eq("id", id)
     .single();
 
-  let box = document.getElementById("product");
+  console.log(data, error);
 
-  if(error){
-    box.innerHTML = "❌ " + error.message;
+  if(error || !data){
+    document.getElementById("product").innerHTML = "❌ Product Not Found";
     return;
   }
 
-  if(!data){
-    box.innerHTML = "❌ Product Not Found";
-    return;
-  }
-
-  box.innerHTML = `
+  document.getElementById("product").innerHTML = `
     <div class="card">
 
       <img src="${data.image || 'https://via.placeholder.com/300'}">
 
-      <h2>${data.name || ''}</h2>
+      <h2>${data.name || 'No Name'}</h2>
 
       <h3>₹${data.price || 0}</h3>
 
       <p>${data.description || 'No description available'}</p>
 
-      <button class="btn" onclick="goBack()">
+      <button class="btn whatsapp" onclick="orderNow('${data.name}','${data.price}')">
+        📲 Order on WhatsApp
+      </button>
+
+      <button class="btn back" onclick="history.back()">
         ⬅ Back
       </button>
 
@@ -111,8 +116,16 @@ async function load(){
   `;
 }
 
-function goBack(){
-  window.history.back();
+/* WHATSAPP ORDER */
+function orderNow(name, price){
+
+  let phone = "91XXXXXXXXXX"; // 👉 अपना WhatsApp number डाल
+
+  let msg = `Hello, I want to order:\n\nProduct: ${name}\nPrice: ₹${price}`;
+
+  let url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+
+  window.open(url, "_blank");
 }
 
 </script>
