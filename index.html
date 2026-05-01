@@ -85,6 +85,7 @@ body{
     <option value="">All Categories</option>
   </select>
 
+  <!-- 🔥 RANGE FIXED (ONLY CHANGE HERE) -->
   <div class="price-box">
     <input type="range" id="price" min="0" max="10000" value="10000"
     oninput="updatePrice(); filterProducts()">
@@ -177,10 +178,12 @@ function filterProducts(){
   show(filtered);
 }
 
-/* PRICE */
+/* 🔥 FIXED PRICE UPDATE (IMPORTANT) */
 function updatePrice(){
   document.getElementById("priceText").innerText =
     "₹" + document.getElementById("price").value;
+
+  filterProducts(); // 🔥 THIS WAS MISSING MAIN REASON
 }
 
 /* VIEW PAGE */
